@@ -1,32 +1,22 @@
-﻿using BepInEx;
+﻿using System.Reflection;
+using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 
-namespace DysonSphereProgram.Modding.StarterTemplate
+namespace DysonSphereProgram.Modding.StarterTemplate;
+
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+public class Plugin : BaseUnityPlugin
 {
-  [BepInPlugin(GUID, NAME, VERSION)]
-  [BepInProcess("DSPGAME.exe")]
-  public class Plugin : BaseUnityPlugin
-  {
-    public const string GUID = "your.guid.here.StarterTemplate";
-    public const string NAME = "StarterTemplate";
-    public const string VERSION = "1.0.0";
-
-    private Harmony _harmony;
-    internal static ManualLogSource Log;
-
+    internal new static ManualLogSource Logger;
+        
     private void Awake()
     {
-      Plugin.Log = Logger;
-      _harmony = new Harmony(GUID);
-      Logger.LogInfo("StarterTemplate Awake() called");
-    }
+        // Plugin startup logic
+        Logger = base.Logger;
+        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
-    private void OnDestroy()
-    {
-      Logger.LogInfo("StarterTemplate OnDestroy() called");
-      _harmony?.UnpatchSelf();
-      Plugin.Log = null;
+        // Load Harmony patches in this assembly
+        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
     }
-  }
 }
